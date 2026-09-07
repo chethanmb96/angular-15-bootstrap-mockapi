@@ -83,6 +83,21 @@ The compiled output will be generated in `dist/angular-15-bootstrap-mockapi/`.
    - Under **Build and deployment** > **Source**, select **GitHub Actions**.
    - Your site will automatically build and deploy!
 
+### Releases via Git Tags
+
+The repository includes an automated release workflow [.github/workflows/release.yml](file:///.github/workflows/release.yml) that triggers whenever a new tag is pushed.
+
+1. **Create and push a tag**:
+   ```powershell
+   git tag v1.0.0
+   git push origin v1.0.0
+   ```
+
+2. **Automated Release**:
+   - The workflow builds the Angular application.
+   - Creates a GitHub Release for the tag.
+   - Attaches all individual compiled build files (`index.html`, `main.*.js`, `polyfills.*.js`, `runtime.*.js`, `styles.*.css`, etc.) directly as individual downloadable release assets.
+
 ---
 
 ## MockAPI.io Resource Schema
