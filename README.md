@@ -1,9 +1,9 @@
 <div align="center">
 
-# ⚡ Angular 15 & Bootstrap CRUD with MockAPI.io
+# ⚡ Angular 15 & Bootstrap with MockAPI.io
 
 <p align="center">
-  <strong>A lightweight, responsive CRUD web application built with Angular 15, Bootstrap 5.3, and cloud persistence via MockAPI.io.</strong>
+  <strong>A lightweight, responsive web application built with Angular 15, Bootstrap 5.3, and cloud persistence via MockAPI.io.</strong>
 </p>
 
 <p align="center">
