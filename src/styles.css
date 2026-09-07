@@ -1,0 +1,60 @@
+/* Bootstrap 5.3 Framework */
+@import "bootstrap/dist/css/bootstrap.min.css";
+
+/* Global Font and Base Styling */
+:root {
+  --app-font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+body {
+  font-family: var(--app-font-family);
+  min-height: 100vh;
+  transition: background-color 0.25s ease, color 0.25s ease;
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+}
+
+/* Softer, less stark dark mode palette */
+[data-bs-theme="dark"] {
+  --bs-body-bg: #1e222b;
+  --bs-body-bg-rgb: 30, 34, 43;
+  --bs-body-color: #e2e8f0;
+  --bs-body-color-rgb: 226, 232, 240;
+  --bs-tertiary-bg: #272d38;
+  --bs-tertiary-bg-rgb: 39, 45, 56;
+  --bs-secondary-bg: #222731;
+  --bs-secondary-bg-rgb: 34, 39, 49;
+  --bs-border-color: #353c4a;
+  --bs-border-color-translucent: rgba(255, 255, 255, 0.12);
+
+  /* Table styling in dark mode */
+  --bs-table-bg: #232833;
+  --bs-table-hover-bg: #2b313e;
+  --bs-table-border-color: #353c4a;
+  --bs-table-striped-bg: #272d38;
+  --bs-table-color: #e2e8f0;
+}
+
+/* Table header colors */
+[data-bs-theme="dark"] .table thead th {
+  background-color: #272d38 !important;
+  color: #94a3b8 !important;
+  border-bottom: 1px solid #353c4a !important;
+}
+
+[data-bs-theme="light"] .table thead th {
+  background-color: #f8fafc !important;
+  color: #64748b !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+/* Modal Enhancement */
+.modal-backdrop.show {
+  opacity: 0.55;
+  backdrop-filter: blur(2px);
+}
+
+/* Smooth transitions */
+.btn, .badge, .form-control, .form-select {
+  transition: all 0.2s ease-in-out;
+}

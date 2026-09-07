@@ -1,0 +1,252 @@
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom sticky-top py-2">
+  <div class="container-fluid px-3 px-lg-4">
+    <!-- Brand -->
+    <div class="d-flex align-items-center gap-2">
+      <div class="bg-primary text-white rounded d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      </div>
+      <span class="navbar-brand fw-semibold mb-0 h1 fs-5">MockAPI Contacts</span>
+    </div>
+
+    <!-- Search Box -->
+    <div class="mx-auto my-2 my-lg-0" style="max-width: 400px; width: 100%;">
+      <div class="input-group">
+        <span class="input-group-text bg-body border-end-0">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </span>
+        <input
+          type="text"
+          class="form-control border-start-0 ps-0"
+          placeholder="Search contacts..."
+          [(ngModel)]="searchTerm"
+        />
+        <button
+          *ngIf="searchTerm"
+          class="btn btn-outline-secondary border-start-0"
+          type="button"
+          (click)="searchTerm = ''"
+          aria-label="Clear"
+        >×</button>
+      </div>
+    </div>
+
+    <!-- Right Actions -->
+    <div class="d-flex align-items-center gap-2">
+      <!-- Dark / Light Theme Toggle -->
+      <button
+        class="btn btn-outline-secondary btn-icon"
+        type="button"
+        (click)="toggleTheme()"
+        [title]="theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'"
+      >
+        <svg *ngIf="theme === 'dark'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="5"/>
+          <line x1="12" y1="1" x2="12" y2="3"/>
+          <line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1" y1="12" x2="3" y2="12"/>
+          <line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+        <svg *ngIf="theme === 'light'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
+
+      <!-- Reload Button -->
+      <button
+        class="btn btn-outline-secondary btn-icon"
+        type="button"
+        (click)="loadItems()"
+        [disabled]="isLoading"
+        title="Reload from MockAPI"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+        </svg>
+      </button>
+
+      <!-- New Contact Button -->
+      <button class="btn btn-primary d-flex align-items-center gap-1" (click)="openModal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        <span>New Contact</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- Main Container -->
+<main class="container my-4">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <div class="mt-2 text-secondary">Loading contacts from MockAPI...</div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && filteredItems.length === 0" class="text-center py-5 border rounded bg-body-tertiary">
+    <p class="text-secondary mb-2">No contacts found matching "{{ searchTerm }}".</p>
+    <button class="btn btn-sm btn-link" (click)="searchTerm = ''">Clear Search</button>
+  </div>
+
+  <!-- Simple Bootstrap Table -->
+  <div *ngIf="!isLoading && filteredItems.length > 0" class="table-responsive border rounded shadow-sm bg-body">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th scope="col" style="width: 60px;" class="text-secondary fw-semibold">#</th>
+          <th scope="col" style="width: 30%;" class="text-secondary fw-semibold">Name & Email</th>
+          <th scope="col" style="width: 25%;" class="text-secondary fw-semibold">Role</th>
+          <th scope="col" style="width: 20%;" class="text-secondary fw-semibold">Department</th>
+          <th scope="col" style="width: 15%;" class="text-secondary fw-semibold">Status</th>
+          <th scope="col" style="width: 100px;" class="text-end text-secondary fw-semibold pe-3">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of filteredItems">
+          <!-- Ascending ID starting from 1 -->
+          <td class="text-secondary fw-bold">{{ item.id }}</td>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <img
+                [src]="item.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + item.name"
+                [alt]="item.name"
+                class="rounded-circle border"
+                width="34"
+                height="34"
+              />
+              <div>
+                <div class="fw-medium text-capitalize">{{ item.name }}</div>
+                <div class="text-secondary small">{{ item.email }}</div>
+              </div>
+            </div>
+          </td>
+          <td class="text-body small">{{ item.role || '—' }}</td>
+          <td class="text-body small">{{ item.department || '—' }}</td>
+          <!-- High-contrast, clear status badge for light & dark mode -->
+          <td>
+            <span class="badge bg-secondary text-white px-2 py-1">
+              {{ item.status || 'Active' }}
+            </span>
+          </td>
+          <td class="text-end pe-3">
+            <div class="btn-group btn-group-sm">
+              <button class="btn btn-outline-primary btn-sm" (click)="openModal(item)" title="Edit">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+              </button>
+              <button class="btn btn-outline-danger btn-sm" (click)="deleteItem(item)" title="Delete">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<!-- Simple Bootstrap Modal (Create & Edit) -->
+<div *ngIf="isModalOpen">
+  <div class="modal show d-block" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content shadow">
+        <div class="modal-header">
+          <h5 class="modal-title fw-semibold">{{ formData.id ? 'Edit Contact #' + formData.id : 'New Contact' }}</h5>
+          <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close"></button>
+        </div>
+        <form (ngSubmit)="saveItem()">
+          <div class="modal-body d-flex flex-column gap-3">
+            <div>
+              <label for="nameInput" class="form-label small fw-medium text-secondary">Full Name *</label>
+              <input
+                type="text"
+                id="nameInput"
+                name="name"
+                class="form-control"
+                [(ngModel)]="formData.name"
+                required
+                placeholder="Enter full name"
+              />
+            </div>
+            <div>
+              <label for="emailInput" class="form-label small fw-medium text-secondary">Email *</label>
+              <input
+                type="email"
+                id="emailInput"
+                name="email"
+                class="form-control"
+                [(ngModel)]="formData.email"
+                required
+                placeholder="Enter email address"
+              />
+            </div>
+            <div class="row g-2">
+              <div class="col-6">
+                <label for="roleInput" class="form-label small fw-medium text-secondary">Role</label>
+                <input
+                  type="text"
+                  id="roleInput"
+                  name="role"
+                  class="form-control"
+                  [(ngModel)]="formData.role"
+                  placeholder="e.g. Developer"
+                />
+              </div>
+              <div class="col-6">
+                <label for="deptInput" class="form-label small fw-medium text-secondary">Department</label>
+                <input
+                  type="text"
+                  id="deptInput"
+                  name="department"
+                  class="form-control"
+                  [(ngModel)]="formData.department"
+                  placeholder="e.g. Engineering"
+                />
+              </div>
+            </div>
+            <div>
+              <label for="statusInput" class="form-label small fw-medium text-secondary">Status</label>
+              <input
+                type="text"
+                id="statusInput"
+                name="status"
+                class="form-control"
+                [(ngModel)]="formData.status"
+                placeholder="e.g. Active, Pending"
+              />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary" [disabled]="!formData.name.trim() || !formData.email.trim()">
+              {{ formData.id ? 'Save' : 'Create' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="modal-backdrop fade show"></div>
+</div>
