@@ -48,7 +48,7 @@
 
 ## ✨ Key Features
 
-- ☁️ **Live MockAPI.io Cloud Integration**: Real-time HTTP GET, POST, PUT, and DELETE operations connected to an online MockAPI resource.
+- ☁️ **Live MockAPI.io Cloud Integration**: Real-time HTTP GET, POST, PATCH, and DELETE operations connected to an online MockAPI resource.
 - 🌓 **Refined Dark / Light Theme**:
   - Theme toggle (☀️ / 🌙) persisted in browser `localStorage`.
   - Modern, eye-friendly slate dark palette (`#1e222b`) with matched table headers and modals.

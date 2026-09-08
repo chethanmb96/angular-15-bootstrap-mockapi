@@ -27,7 +27,7 @@ export class MockApiService {
   }
 
   update(id: string, updates: Partial<ContactItem>): Observable<ContactItem> {
-    return this.http.put<ContactItem>(`${this.apiUrl}/${id}`, updates);
+    return this.http.patch<ContactItem>(`${this.apiUrl}/${id}`, updates);
   }
 
   delete(id: string): Observable<void> {
