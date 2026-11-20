@@ -44,14 +44,14 @@ jobs:
         run: npm run build:gh-pages
 
       - name: Upload artifact
-        if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && inputs.branch == 'main') }}
+        if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.branch == 'main') }}
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist/angular-15-bootstrap-mockapi
 
   deploy:
     name: Deploy production to GitHub Pages
-    if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && inputs.branch == 'main') }}
+    if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.branch == 'main') }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
