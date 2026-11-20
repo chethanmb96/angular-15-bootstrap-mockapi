@@ -1,9 +1,16 @@
-name: Deploy to GitHub Pages
+name: Build and Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ master, main ]
+    branches:
+      - '**'
   workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to build (production deployment is allowed only from main)'
+        required: true
+        default: 'main'
+        type: string
 
 permissions:
   contents: read
@@ -16,10 +23,13 @@ concurrency:
 
 jobs:
   build:
+    name: Build (${{ github.event_name == 'workflow_dispatch' && inputs.branch || github.ref_name }})
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout selected branch
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.branch || github.ref }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -34,11 +44,14 @@ jobs:
         run: npm run build:gh-pages
 
       - name: Upload artifact
+        if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && inputs.branch == 'main') }}
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist/angular-15-bootstrap-mockapi
 
   deploy:
+    name: Deploy production to GitHub Pages
+    if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && inputs.branch == 'main') }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
