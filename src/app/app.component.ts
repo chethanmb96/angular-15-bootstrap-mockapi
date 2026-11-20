@@ -10,6 +10,8 @@ import { MockApiService } from './services/mockapi.service';
 export class AppComponent implements OnInit {
   items: ContactItem[] = [];
   isLoading = false;
+  isSaving = false;
+  errorMessage = '';
   isModalOpen = false;
   searchTerm = '';
   theme: 'light' | 'dark' = 'light';
@@ -56,6 +58,7 @@ export class AppComponent implements OnInit {
 
   loadItems(): void {
     this.isLoading = true;
+    this.errorMessage = '';
     this.apiService.getAll().subscribe({
       next: (data) => {
         this.items = Array.isArray(data) ? data : [];
@@ -63,12 +66,14 @@ export class AppComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading contacts from MockAPI', err);
+        this.errorMessage = 'Unable to load contacts. Please try again.';
         this.isLoading = false;
       }
     });
   }
 
   openModal(item?: ContactItem): void {
+    this.errorMessage = '';
     if (item) {
       this.formData = {
         id: item.id,
@@ -91,31 +96,55 @@ export class AppComponent implements OnInit {
   }
 
   saveItem(): void {
-    if (!this.formData.name.trim() || !this.formData.email.trim()) return;
+    if (this.isSaving || !this.formData.name.trim() || !this.formData.email.trim()) return;
 
-    if (this.formData.id) {
-      const id = this.formData.id;
-      this.apiService.update(id, this.formData).subscribe({
+    this.isSaving = true;
+    this.errorMessage = '';
+    const form = { ...this.formData };
+
+    if (form.id) {
+      const id = form.id;
+      this.apiService.update(id, {
+        name: form.name.trim(),
+        email: form.email.trim(),
+        role: form.role || 'Member',
+        department: form.department || 'General',
+        status: form.status || 'Active',
+        avatar: form.avatar,
+        bio: form.bio.trim()
+      }).subscribe({
         next: (updated) => {
-          this.items = this.items.map(item => item.id === id ? { ...item, ...this.formData } : item);
+          this.items = this.items.map(item => item.id === id ? updated : item);
+          this.isSaving = false;
           this.closeModal();
+        },
+        error: (err) => {
+          console.error('Error updating contact in MockAPI', err);
+          this.errorMessage = 'Unable to save changes. Please try again.';
+          this.isSaving = false;
         }
       });
     } else {
       const newItem: NewContactItem = {
-        name: this.formData.name.trim(),
-        email: this.formData.email.trim(),
-        role: this.formData.role || 'Member',
-        department: this.formData.department || 'General',
-        status: this.formData.status || 'Active',
-        avatar: this.formData.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${this.formData.name}`,
-        bio: this.formData.bio.trim()
+        name: form.name.trim(),
+        email: form.email.trim(),
+        role: form.role || 'Member',
+        department: form.department || 'General',
+        status: form.status || 'Active',
+        avatar: form.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(form.name)}`,
+        bio: form.bio.trim()
       };
 
       this.apiService.create(newItem).subscribe({
         next: (created) => {
           this.items = [...this.items, created];
+          this.isSaving = false;
           this.closeModal();
+        },
+        error: (err) => {
+          console.error('Error creating contact in MockAPI', err);
+          this.errorMessage = 'Unable to create contact. Please try again.';
+          this.isSaving = false;
         }
       });
     }
@@ -127,14 +156,19 @@ export class AppComponent implements OnInit {
       this.apiService.delete(item.id).subscribe({
         next: () => {
           this.items = this.items.filter(i => i.id !== item.id);
+          this.errorMessage = '';
+        },
+        error: (err) => {
+          console.error('Error deleting contact from MockAPI', err);
+          this.errorMessage = 'Unable to delete contact. Please try again.';
         }
       });
     }
   }
 
   initTheme(): void {
-    const saved = (localStorage.getItem('bootstrap-theme') as 'light' | 'dark') || 'light';
-    this.setTheme(saved);
+    const saved = localStorage.getItem('bootstrap-theme');
+    this.setTheme(saved === 'dark' ? 'dark' : 'light');
   }
 
   toggleTheme(): void {
