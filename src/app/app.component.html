@@ -105,7 +105,7 @@
   </div>
 
   <!-- Empty State -->
-  <div *ngIf="!isLoading && filteredItems.length === 0" class="text-center py-5 border rounded bg-body-tertiary">
+  <div *ngIf="!isLoading && !errorMessage && filteredItems.length === 0" class="text-center py-5 border rounded bg-body-tertiary">
     <p class="text-secondary mb-2">No contacts found matching "{{ searchTerm }}".</p>
     <button class="btn btn-sm btn-link" (click)="searchTerm = ''">Clear Search</button>
   </div>
